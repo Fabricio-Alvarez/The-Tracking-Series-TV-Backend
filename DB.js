@@ -29,7 +29,9 @@ await db.execute(`
     user_id TEXT NOT NULL,
     show_id TEXT NOT NULL,
     type TEXT NOT NULL CHECK (type IN ('watchlist', 'watched', 'favorites', 'watching')),
+    media_type TEXT DEFAULT 'series',
     added_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    progress TEXT,
     FOREIGN KEY (user_id) REFERENCES users(id)
   )
 `);

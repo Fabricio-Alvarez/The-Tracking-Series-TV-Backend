@@ -16,36 +16,39 @@ app.use(express.json());
 initializeDatabase();
 
 // Crear usuario
-app.post("/api/users", async (req, res) => {
-  const { email, name } = req.body;
+app.post("/api/user-shows", async (req, res) => {
+  const { userId, showId, type, mediaType } = req.body;
 
-  if (!email || !name) {
-    return res.status(400).json({ error: "Email y nombre son requeridos" });
+  if (!userId || !showId || !type) {
+    return res.status(400).json({ error: "userId, showId y type son requeridos" });
+  }
+
+  if (!['watchlist', 'watched', 'favorites', 'watching'].includes(type)) {
+    return res.status(400).json({ error: "type debe ser watchlist, watched, favorites o watching" });
   }
 
   try {
-    const userId = Math.random().toString(36).substr(2, 9);
+    // Verificar si ya existe el show en la lista para evitar duplicados
+    const existingShow = await db.execute(
+      `SELECT id FROM user_shows WHERE user_id = ? AND show_id = ? AND type = ?`,
+      [userId, showId, type]
+    );
+
+    if (existingShow.rows.length > 0) {
+      return res.status(409).json({ error: "El show ya está en esta lista" });
+    }
+
+    const userShowId = Math.random().toString(36).substr(2, 9);
     const now = new Date().toISOString();
 
     await db.execute(
-      `INSERT INTO users (id, email, name, created_at) VALUES (?, ?, ?, ?)`,
-      [userId, email, name, now]
+      `INSERT INTO user_shows (id, user_id, show_id, type, media_type, added_at) VALUES (?, ?, ?, ?, ?, ?)`,
+      [userShowId, userId, showId, type, mediaType || 'series', now]
     );
 
-    const user = {
-      id: userId,
-      email,
-      name,
-      createdAt: now
-    };
-
-    res.status(201).json(user);
+    res.status(200).json({ message: "Show agregado correctamente" });
   } catch (error) {
-    if (error.message.includes('UNIQUE constraint failed')) {
-      res.status(409).json({ error: "El email ya está registrado" });
-    } else {
-      res.status(500).json({ error: error.message });
-    }
+    res.status(500).json({ error: error.message });
   }
 });
 
