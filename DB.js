@@ -8,10 +8,8 @@ export const db = createClient({
   authToken: process.env.TURSO_DB_TOKEN,
 });
 
-// Inicializar las tablas si no existen
 export async function initializeDatabase() {
   try {
-    // Crear tabla de usuarios
     await db.execute(`
       CREATE TABLE IF NOT EXISTS users (
         id TEXT PRIMARY KEY,
@@ -21,8 +19,6 @@ export async function initializeDatabase() {
       )
     `);
 
-    // Crear tabla de shows del usuario
-   // Crear tabla de shows del usuario
 await db.execute(`
   CREATE TABLE IF NOT EXISTS user_shows (
     id TEXT PRIMARY KEY,
@@ -36,8 +32,8 @@ await db.execute(`
   )
 `);
 
-    console.log('✅ Base de datos Turso inicializada');
+    console.log('\u2705 Base de datos Turso inicializada');
   } catch (error) {
-    console.error('❌ Error inicializando base de datos:', error);
+    console.error('\u274c Error inicializando base de datos:', error);
   }
 }

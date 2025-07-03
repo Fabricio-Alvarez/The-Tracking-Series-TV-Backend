@@ -12,10 +12,8 @@ const PORT = 3001;
 app.use(cors());
 app.use(express.json());
 
-// Inicializar base de datos al arrancar
 initializeDatabase();
 
-// Crear usuario
 app.post("/api/user-shows", async (req, res) => {
   const { userId, showId, type, mediaType } = req.body;
 
@@ -28,7 +26,6 @@ app.post("/api/user-shows", async (req, res) => {
   }
 
   try {
-    // Verificar si ya existe el show en la lista para evitar duplicados
     const existingShow = await db.execute(
       `SELECT id FROM user_shows WHERE user_id = ? AND show_id = ? AND type = ?`,
       [userId, showId, type]
@@ -52,7 +49,6 @@ app.post("/api/user-shows", async (req, res) => {
   }
 });
 
-// Obtener usuario por email
 app.get("/api/users/:email", async (req, res) => {
   const { email } = req.params;
 
@@ -72,7 +68,6 @@ app.get("/api/users/:email", async (req, res) => {
   }
 });
 
-// Agregar show a lista del usuario
 app.post("/api/user-shows", async (req, res) => {
   const { userId, showId, type } = req.body;
 
@@ -99,7 +94,6 @@ app.post("/api/user-shows", async (req, res) => {
   }
 });
 
-// Remover show de lista del usuario
 app.delete("/api/user-shows", async (req, res) => {
   const { userId, showId, type } = req.body;
 
@@ -119,7 +113,6 @@ app.delete("/api/user-shows", async (req, res) => {
   }
 });
 
-// Obtener shows del usuario por tipo
 app.get("/api/user-shows/:userId/:type", async (req, res) => {
   const { userId, type } = req.params;
 
@@ -135,7 +128,6 @@ app.get("/api/user-shows/:userId/:type", async (req, res) => {
   }
 });
 
-// Obtener todos los shows del usuario
 app.get("/api/user-shows/:userId", async (req, res) => {
   const { userId } = req.params;
 
@@ -151,7 +143,6 @@ app.get("/api/user-shows/:userId", async (req, res) => {
   }
 });
 
-// Verificar si un show está en una lista específica
 app.get("/api/user-shows/:userId/:showId/:type", async (req, res) => {
   const { userId, showId, type } = req.params;
 
@@ -168,7 +159,6 @@ app.get("/api/user-shows/:userId/:showId/:type", async (req, res) => {
   }
 });
 
-// Token de TheTVDB (mantener el endpoint existente)
 app.get("/api/thetvdb/token", async (req, res) => {
   try {
     const response = await fetch("https://api4.thetvdb.com/v4/login", {
